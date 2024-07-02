@@ -1,3 +1,5 @@
+import re
+
 import pandas as pd
 from enum import Enum, auto
 from PIL import Image as PILImage
@@ -7,6 +9,7 @@ class ContentType(Enum):
     TEXT = auto()
     TABLE = auto()
     IMAGE = auto()
+    TEXTLINE = auto()
 
 class Content:
     def __init__(self, content_type, original, translation=None):
@@ -28,8 +31,15 @@ class Content:
             return True
         elif self.content_type == ContentType.IMAGE and isinstance(translation, PILImage.Image):
             return True
+        elif self.content_type == ContentType.TEXTLINE and isinstance(translation, str):
+            return True
         return False
+class TextLineContent(Content):
+    def __init__(self, data, translation=None):
+        super().__init__(ContentType.TEXTLINE, data["text"])
 
+    def get_original_as_str(self):
+        return self.original
 
 class TableContent(Content):
     def __init__(self, data, translation=None):
@@ -48,8 +58,11 @@ class TableContent(Content):
 
             LOG.debug(translation)
             # Convert the string to a list of lists
-            table_data = [row.strip().split() for row in translation.strip().split('\n')]
+            table_data = [[w.strip() for w in re.split(r'\s+|\|', row.strip()) if len(w.strip()) != 0] for row in translation.strip().split('\n') if "---" not in row]
             LOG.debug(table_data)
+            # 防止列字段个数不同
+            if len(table_data[0])>len(table_data[1]):
+                table_data[0]=table_data[0][0:len(table_data[1])]
             # Create a DataFrame from the table_data
             translated_df = pd.DataFrame(table_data[1:], columns=table_data[0])
             LOG.debug(translated_df)

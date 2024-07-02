@@ -7,3 +7,8 @@ reportlab
 pandas
 loguru
 openai
+zhipuai
+gradio
+fastapi
+uvicorn
+python-multipart

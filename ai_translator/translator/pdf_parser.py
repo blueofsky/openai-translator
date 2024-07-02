@@ -1,6 +1,6 @@
 import pdfplumber
 from typing import Optional
-from book import Book, Page, Content, ContentType, TableContent
+from book import Book, Page, Content, ContentType, TableContent, TextLineContent
 from translator.exceptions import PageOutOfRangeException
 from utils import LOG
 
@@ -8,6 +8,13 @@ from utils import LOG
 class PDFParser:
     def __init__(self):
         pass
+
+    def check(self, tables, text):
+        for table in tables:
+            for row in table:
+                if row[0] in text:
+                    return True
+        return False
 
     def parse_pdf(self, pdf_file_path: str, pages: Optional[int] = None) -> Book:
         book = Book(pdf_file_path)
@@ -25,27 +32,34 @@ class PDFParser:
                 page = Page()
 
                 # Store the original text content
-                raw_text = pdf_page.extract_text()
+                # raw_text = pdf_page.extract_text()
                 tables = pdf_page.extract_tables()
+                # text_lines提供了更细致的文本布局信息
+                text_lines=pdf_page.extract_text_lines(),
 
                 # Remove each cell's content from the original text
-                for table_data in tables:
-                    for row in table_data:
-                        for cell in row:
-                            raw_text = raw_text.replace(cell, "", 1)
+                # for table_data in tables:
+                #     for row in table_data:
+                #         for cell in row:
+                #             raw_text = raw_text.replace(cell, "", 1)
 
                 # Handling text
-                if raw_text:
-                    # Remove empty lines and leading/trailing whitespaces
-                    raw_text_lines = raw_text.splitlines()
-                    cleaned_raw_text_lines = [line.strip() for line in raw_text_lines if line.strip()]
-                    cleaned_raw_text = "\n".join(cleaned_raw_text_lines)
+                # if raw_text:
+                #     # Remove empty lines and leading/trailing whitespaces
+                #     raw_text_lines = raw_text.splitlines()
+                #     cleaned_raw_text_lines = [line.strip() for line in raw_text_lines if line.strip()]
+                #     cleaned_raw_text = "\n".join(cleaned_raw_text_lines)
+                #
+                #     text_content = Content(content_type=ContentType.TEXT, original=cleaned_raw_text)
+                #     page.add_content(text_content)
+                #     LOG.debug(f"[raw_text]\n {cleaned_raw_text}")
 
-                    text_content = Content(content_type=ContentType.TEXT, original=cleaned_raw_text)
-                    page.add_content(text_content)
-                    LOG.debug(f"[raw_text]\n {cleaned_raw_text}")
-
-
+                if text_lines:
+                    for text_line in text_lines:
+                        for line in text_line:
+                            if self.check(tables, line["text"]) == False:
+                                line_content = TextLineContent(line)
+                                page.add_content(line_content)
 
                 # Handling tables
                 if tables:

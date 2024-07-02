@@ -9,7 +9,7 @@
 
 ## 介绍
 
-OpenAI 翻译器是一个使用 AI 技术将英文 PDF 书籍翻译成中文的工具。这个工具使用了大型语言模型 (LLMs)，如 ChatGLM 和 OpenAI 的 GPT-3 以及 GPT-3.5 Turbo 来进行翻译。它是用 Python 构建的，并且具有灵活、模块化和面向对象的设计。
+OpenAI 翻译器是一个使用 AI 技术将英文 PDF 书籍翻译成中文的工具。这个工具使用了大型语言模型 (LLMs)，如 ChatGLM、ZhipuAI和 OpenAI 的 GPT-3 以及 GPT-3.5 Turbo 来进行翻译。它是用 Python 构建的，并且具有灵活、模块化和面向对象的设计。
 
 ## 为什么做这个项目
 
@@ -28,15 +28,15 @@ OpenAI 翻译器目前还处于早期开发阶段，我正在积极地添加更�
 ## 特性
 
 - [X] 使用大型语言模型 (LLMs) 将英文 PDF 书籍翻译成中文。
-- [X] 支持 ChatGLM 和 OpenAI 模型。
+- [X] 支持 ChatGLM、ZhipuAI 和 OpenAI 模型。
 - [X] 通过 YAML 文件或命令行参数灵活配置。
 - [X] 对健壮的翻译操作进行超时和错误处理。
 - [X] 模块化和面向对象的设计，易于定制和扩展。
-- [ ] 实现图形用户界面 (GUI) 以便更易于使用。
+- [X] 实现图形用户界面 (GUI) 以便更易于使用。
+- [X] 创建一个网络服务或 API，以便在网络应用中使用。
+- [X] 添加对其他语言和翻译方向的支持。
+- [X] 添加对保留源 PDF 的原始布局和格式的支持。
 - [ ] 添加对多个 PDF 文件的批处理支持。
-- [ ] 创建一个网络服务或 API，以便在网络应用中使用。
-- [ ] 添加对其他语言和翻译方向的支持。
-- [ ] 添加对保留源 PDF 的原始布局和格式的支持。
 - [ ] 通过使用自定义训练的翻译模型来提高翻译质量。
 
 
@@ -48,7 +48,7 @@ OpenAI 翻译器目前还处于早期开发阶段，我正在积极地添加更�
 
 2.OpenAI-翻译器 需要 Python 3.6 或更高版本。使用 `pip install -r requirements.txt` 安装依赖项。
 
-3.设置您的 OpenAI API 密钥(`$OPENAI_API_KEY`)或 ChatGLM 模型 URL(`$GLM_MODEL_URL`)。您可以将其添加到环境变量中，或者在 config.yaml 文件中指定。
+3.设置您的 OpenAI API 密钥(`$OPENAI_API_KEY`)或ZhipuAI API 密钥(`$ZHIPUAI_API_KEY`)或 ChatGLM 模型 URL(`$GLM_MODEL_URL`)。您可以将其添加到环境变量中，或者在 config.yaml 文件中指定。
 
 ### 使用示例
 
@@ -62,7 +62,11 @@ OpenAI 翻译器目前还处于早期开发阶段，我正在积极地添加更�
 OpenAIModel:
   model: "gpt-3.5-turbo"
   api_key: "your_openai_api_key"
-
+  
+ZhipuAIModel:
+  model: "glm-4"
+  api_key: "your_openai_api_key"
+  
 GLMModel:
   model_url: "your_chatglm_model_url"
   timeout: 300
@@ -76,6 +80,8 @@ common:
 
 ```bash
 python ai_translator/main.py
+python ai_translator/apiserver.py
+python ai_translator/guiserver.py
 ```
 
 ![sample_out](images/sample_image_1.png)
@@ -87,7 +93,14 @@ python ai_translator/main.py
 ```bash
 # 将您的 api_key 设置为环境变量
 export OPENAI_API_KEY="sk-xxx"
-python main.py --model_type OpenAIModel --api_key $OPENAI_API_KEY --book your_book.pdf 
+python ai_translator/main.py --model_type OpenAIModel --api_key $OPENAI_API_KEY --book your_book.pdf 
+```
+这是使用 ZhipuAI 模型的例子：
+
+```bash
+# 将您的 ZhipuAI 模型 URL 设置为环境变量
+export ZHIPUAI_API_KEY="xxxxx"
+python ai_translator/main.py --model_type ZhipuAIModel --api_key $ZHIPUAI_API_KEY --book your_book.pdf 
 ```
 
 这是使用 GLM 模型的例子：
@@ -95,8 +108,65 @@ python main.py --model_type OpenAIModel --api_key $OPENAI_API_KEY --book your_bo
 ```bash
 # 将您的 GLM 模型 URL 设置为环境变量
 export GLM_MODEL_URL="http://xxx:xx"
-python main.py --model_type GLMModel --glm_model_url $GLM_MODEL_URL --book your_book.pdf 
+python ai_translator/main.py --model_type GLMModel --glm_model_url $GLM_MODEL_URL --book your_book.pdf 
 ```
+#### 使用图形界面
+
+您也可以直接在命令行上指定设置。这是使用 OpenAI 模型的例子：
+
+```bash
+# 将您的 api_key 设置为环境变量
+export OPENAI_API_KEY="sk-xxx"
+python ai_translator/guiserver.py --model_type OpenAIModel 
+```
+这是使用 ZhipuAI 模型的例子：
+
+```bash
+# 将您的 ZhipuAI 模型 URL 设置为环境变量
+export ZHIPUAI_API_KEY="xxxxx"
+python ai_translator/guiserver.py --model_type ZhipuAIModel --api_key $ZHIPUAI_API_KEY
+```
+
+这是使用 GLM 模型的例子：
+
+```bash
+# 将您的 GLM 模型 URL 设置为环境变量
+export GLM_MODEL_URL="http://xxx:xx"
+python ai_translator/guiserver.py --model_type GLMModel --glm_model_url $GLM_MODEL_URL
+```
+
+##### 运行界面
+- 访问地址：http://127.0.0.1:7860/
+![sample_gui_image](images/sample_gui_image.bmp)
+
+#### 使用API接口
+
+您也可以直接在命令行上指定设置。这是使用 OpenAI 模型的例子：
+
+```bash
+# 将您的 api_key 设置为环境变量
+export OPENAI_API_KEY="sk-xxx"
+python ai_translator/apiserver.py --model_type OpenAIModel
+```
+这是使用 ZhipuAI 模型的例子：
+
+```bash
+# 将您的 ZhipuAI 模型 URL 设置为环境变量
+export ZHIPUAI_API_KEY="xxxxx"
+python ai_translator/apiserver.py --model_type ZhipuAIModel --api_key $ZHIPUAI_API_KEY
+```
+
+这是使用 GLM 模型的例子：
+
+```bash
+# 将您的 GLM 模型 URL 设置为环境变量
+export GLM_MODEL_URL="http://xxx:xx"
+python ai_translator/apiserver.py --model_type GLMModel --glm_model_url $GLM_MODEL_URL
+```
+
+##### 运行界面
+- Swagger地址: http://127.0.0.1:8000/docs
+![sample_gui_image](images/sample_api_image.bmp)
 
 ## 许可证
 

@@ -16,9 +16,9 @@ class Writer:
 
     def save_translated_book(self, book: Book, output_file_path: str = None, file_format: str = "PDF"):
         if file_format.lower() == "pdf":
-            self._save_translated_book_pdf(book, output_file_path)
+            return self._save_translated_book_pdf(book, output_file_path)
         elif file_format.lower() == "markdown":
-            self._save_translated_book_markdown(book, output_file_path)
+            return self._save_translated_book_markdown(book, output_file_path)
         else:
             raise ValueError(f"Unsupported file format: {file_format}")
 
@@ -50,10 +50,19 @@ class Writer:
                         text = content.translation
                         para = Paragraph(text, simsun_style)
                         story.append(para)
-
+                    elif content.content_type == ContentType.TEXTLINE:
+                        # Add translated text to the PDF
+                        text = content.translation
+                        para = Paragraph(text, simsun_style)
+                        story.append(para)
                     elif content.content_type == ContentType.TABLE:
                         # Add table to the PDF
                         table = content.translation
+                        list = table.values.tolist()
+                        header = table.columns.tolist()  # Get the table header
+                        n_table = [header] + list[1:]  # Append the header and list to n_list
+                        n_table = [[element.replace("|", "") for element in sublist] for sublist in n_table]
+                        n_table = [[element for element in sublist if element.strip()] for sublist in n_table]
                         table_style = TableStyle([
                             ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -65,7 +74,7 @@ class Writer:
                             ('FONTNAME', (0, 1), (-1, -1), 'SimSun'),  # 更改表格中的字体为 "SimSun"
                             ('GRID', (0, 0), (-1, -1), 1, colors.black)
                         ])
-                        pdf_table = Table(table.values.tolist())
+                        pdf_table = Table(n_table)
                         pdf_table.setStyle(table_style)
                         story.append(pdf_table)
             # Add a page break after each page except the last one
@@ -75,6 +84,7 @@ class Writer:
         # Save the translated book as a new PDF file
         doc.build(story)
         LOG.info(f"翻译完成: {output_file_path}")
+        return output_file_path
 
     def _save_translated_book_markdown(self, book: Book, output_file_path: str = None):
         if output_file_path is None:
@@ -91,7 +101,10 @@ class Writer:
                             # Add translated text to the Markdown file
                             text = content.translation
                             output_file.write(text + '\n\n')
-
+                        if content.content_type == ContentType.TEXTLINE:
+                            # Add translated text to the Markdown file
+                            text = content.translation
+                            output_file.write(text + '\n\n')
                         elif content.content_type == ContentType.TABLE:
                             # Add table to the Markdown file
                             table = content.translation
@@ -106,3 +119,4 @@ class Writer:
                     output_file.write('---\n\n')
 
         LOG.info(f"翻译完成: {output_file_path}")
+        return output_file_path

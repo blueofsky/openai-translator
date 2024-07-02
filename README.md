@@ -29,15 +29,15 @@ The OpenAI Translator is still in its early stages of development, and I'm activ
 ## Features
 
 - [X] Translation of English PDF books to Chinese using LLMs.
-- [X] Support for both [ChatGLM](https://github.com/THUDM/ChatGLM-6B) and [OpenAI](https://platform.openai.com/docs/models) models.
+- [X] Support for both [ChatGLM](https://github.com/THUDM/ChatGLM-6B) and [ZhipuAI](https://open.bigmodel.cn/dev/api) and [OpenAI](https://platform.openai.com/docs/models) models.
 - [X] Flexible configuration through a YAML file or command-line arguments.
 - [X] Timeouts and error handling for robust translation operations.
 - [X] Modular and object-oriented design for easy customization and extension.
-- [ ] Implement a graphical user interface (GUI) for easier use.
+- [X] Implement a graphical user interface (GUI) for easier use.
+- [X] Create a web service or API to enable usage in web applications.
+- [X] Add support for other languages and translation directions.
+- [X] Add support for preserving the original layout and formatting of the source PDF.
 - [ ] Add support for batch processing of multiple PDF files.
-- [ ] Create a web service or API to enable usage in web applications.
-- [ ] Add support for other languages and translation directions.
-- [ ] Add support for preserving the original layout and formatting of the source PDF.
 - [ ] Improve translation quality by using custom-trained translation models.
 
 
@@ -49,7 +49,7 @@ The OpenAI Translator is still in its early stages of development, and I'm activ
 
 2.The `OpenAI-Translator` requires Python 3.6 or later. Install the dependencies with `pip install -r requirements.txt`.
 
-3.Set up your OpenAI API key(`$OPENAI_API_KEY`) or ChatGLM Model URL(`$GLM_MODEL_URL`). You can either add it to your environment variables or specify it in the config.yaml file.
+3.Set up your OpenAI API key(`$OPENAI_API_KEY`) or ZhipuAI API key(`$ZHIPUAI_API_KEY`) or ChatGLM Model URL(`$GLM_MODEL_URL`). You can either add it to your environment variables or specify it in the config.yaml file.
 
 ### Usage
 
@@ -63,7 +63,11 @@ Adapt `config.yaml` file with your settings:
 OpenAIModel:
   model: "gpt-3.5-turbo"
   api_key: "your_openai_api_key"
-
+  
+ZhipuAIModel:
+  model: "glm-4"
+  api_key: "your_openai_api_key"
+  
 GLMModel:
   model_url: "your_chatglm_model_url"
   timeout: 300
@@ -77,6 +81,8 @@ Then run the tool:
 
 ```bash
 python ai_translator/main.py
+python ai_translator/apiserver.py
+python ai_translator/guiserver.py
 ```
 
 ![sample_out](images/sample_image_1.png)
@@ -91,6 +97,14 @@ export OPENAI_API_KEY="sk-xxx"
 python ai_translator/main.py --model_type OpenAIModel --api_key $OPENAI_API_KEY --book your_book.pdf 
 ```
 
+And an example of how to use the ZhipuAI model:
+
+```bash
+# Set your ZhipuAI Model URL as an env variable
+export ZHIPUAI_API_KEY="xxxxx"
+python ai_translator/main.py --model_type ZhipuAIModel --api_key $ZHIPUAI_API_KEY --book your_book.pdf 
+```
+
 And an example of how to use the GLM model:
 
 ```bash
@@ -99,6 +113,66 @@ export GLM_MODEL_URL="http://xxx:xx"
 python ai_translator/main.py --model_type GLMModel --glm_model_url $GLM_MODEL_URL --book your_book.pdf 
 ```
 
+#### Using GUI:
+
+You can also specify the settings directly on the command line. Here's an example of how to use the OpenAI model:
+
+```bash
+# Set your api_key as an env variable
+export OPENAI_API_KEY="sk-xxx"
+python ai_translator/guiserver.py --model_type OpenAIModel --api_key $OPENAI_API_KEY 
+```
+
+And an example of how to use the ZhipuAI model:
+
+```bash
+# Set your ZhipuAI Model URL as an env variable
+export ZHIPUAI_API_KEY="xxxxx"
+python ai_translator/guiserver.py --model_type ZhipuAIModel --api_key $ZHIPUAI_API_KEY
+```
+
+And an example of how to use the GLM model:
+
+```bash
+# Set your GLM Model URL as an env variable
+export GLM_MODEL_URL="http://xxx:xx"
+python ai_translator/guiserver.py --model_type GLMModel --glm_model_url $GLM_MODEL_URL
+```
+
+##### Running:
+- URL：http://127.0.0.1:7860/
+![sample_gui_image](images/sample_gui_image.bmp)
+
+#### Using API:
+
+You can also specify the settings directly on the command line. Here's an example of how to use the OpenAI model:
+
+```bash
+# Set your api_key as an env variable
+export OPENAI_API_KEY="sk-xxx"
+python ai_translator/apiserver.py --model_type OpenAIModel --api_key $OPENAI_API_KEY
+```
+
+And an example of how to use the ZhipuAI model:
+
+```bash
+# Set your ZhipuAI Model URL as an env variable
+export ZHIPUAI_API_KEY="xxxxx"
+python ai_translator/apiserver.py --model_type ZhipuAIModel --api_key ZHIPUAI_API_KEY
+```
+
+And an example of how to use the GLM model:
+
+```bash
+# Set your GLM Model URL as an env variable
+export GLM_MODEL_URL="http://xxx:xx"
+python ai_translator/apiserver.py --model_type GLMModel --glm_model_url $GLM_MODEL_URL
+```
+
+##### Running:
+- Swagger: http://127.0.0.1:8000/docs
+![sample_gui_image](images/sample_api_image.bmp)
+- 
 ## License
 
 This project is licensed under the GPL-3.0 License. See the [LICENSE](LICENSE) file for details.
