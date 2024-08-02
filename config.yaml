@@ -1,17 +1,6 @@
-OpenAIModel:
-  model: "gpt-3.5-turbo"
-  api_key:
-
-ZhipuAIModel:
-  model: "glm-4"
-  api_key:
-
-GLMModel:
-  model_url: "your_chatglm_model_url"
-  timeout: 300
-
-common:
-  model_type: "OpenAIModel"
-  book: "test/test.pdf"
-  file_format: "pdf"
-  language: "中文"
+model_type: "openai"
+model_name: "gpt-3.5-turbo"
+input_file: "tests/test.pdf"
+source_language: "English"
+target_language: "Chinese"
+target_file_format: "markdown"

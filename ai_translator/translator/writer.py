@@ -14,7 +14,7 @@ class Writer:
     def __init__(self):
         pass
 
-    def save_translated_book(self, book: Book, output_file_path: str = None, file_format: str = "PDF"):
+    def save_translated_book(self, book: Book, file_format: str = "PDF", output_file_path: str = None):
         if file_format.lower() == "pdf":
             return self._save_translated_book_pdf(book, output_file_path)
         elif file_format.lower() == "markdown":
@@ -26,11 +26,10 @@ class Writer:
         if output_file_path is None:
             output_file_path = book.pdf_file_path.replace('.pdf', f'_translated.pdf')
 
-        LOG.info(f"pdf_file_path: {book.pdf_file_path}")
-        LOG.info(f"开始翻译: {output_file_path}")
+        LOG.info(f"开始写入: {output_file_path}")
 
         # Register Chinese font
-        font_path = "../fonts/simsun.ttc"  # 请将此路径替换为您的字体文件路径
+        font_path = "./fonts/simsun.ttc"  # 请将此路径替换为您的字体文件路径
         pdfmetrics.registerFont(TTFont("SimSun", font_path))
 
         # Create a new ParagraphStyle with the SimSun font
@@ -83,15 +82,14 @@ class Writer:
 
         # Save the translated book as a new PDF file
         doc.build(story)
-        LOG.info(f"翻译完成: {output_file_path}")
+        LOG.info(f"写入完成: {output_file_path}")
         return output_file_path
 
     def _save_translated_book_markdown(self, book: Book, output_file_path: str = None):
         if output_file_path is None:
             output_file_path = book.pdf_file_path.replace('.pdf', f'_translated.md')
 
-        LOG.info(f"pdf_file_path: {book.pdf_file_path}")
-        LOG.info(f"开始翻译: {output_file_path}")
+        LOG.info(f"开始写入: {output_file_path}")
         with open(output_file_path, 'w', encoding='utf-8') as output_file:
             # Iterate over the pages and contents
             for page in book.pages:
@@ -118,5 +116,5 @@ class Writer:
                 if page != book.pages[-1]:
                     output_file.write('---\n\n')
 
-        LOG.info(f"翻译完成: {output_file_path}")
+        LOG.info(f"写入完成: {output_file_path}")
         return output_file_path
