@@ -23,9 +23,14 @@ OpenAI 翻译器是一个使用 AI 技术将英文 PDF 书籍翻译成中文的�
 ```bash
 # 安装ollama
 curl -fsSL https://ollama.com/install.sh | sh
-# 启动ollama server
-ollama serve
-# 拉取模型
+
+# 配置启动端口，如已经启动了，可执行`systemctl restart ollama.service`重启ollama服务
+# export OLLAMA_HOST=0.0.0.0:11434
+
+# 如没有启动ollama，则受到启动ollama server
+# ollama serve
+
+# 拉取大模型
 ollama pull glm4:9b
 ```
 * Python环境准备
