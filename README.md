@@ -19,15 +19,6 @@ OpenAI 翻译器是一个使用 AI 技术将英文 PDF 书籍翻译成中文的�
 ## 使用说明
 
 ### 1. 环境准备
-* Ollama环境准备
-```bash
-# 安装ollama
-curl -fsSL https://ollama.com/install.sh | sh
-# 启动ollama server
-ollama serve
-# 拉取模型
-ollama pull glm4:9b
-```
 * Python环境准备
 ```bash
 # 克隆仓库
@@ -35,10 +26,30 @@ git clone https://github.com/blueofsky/openai-translator.git
 # 安装依赖
 cd openai-translator
 pip install -r requirements.txt
-# 设置环境变量
-## 使用ollama本地部署模型时，配置ollama_server地址，默认为http://localhost:11434
+```
+
+* Ollama模型部署
+```bash
+# 安装ollama
+curl -fsSL https://ollama.com/install.sh | sh
+# 启动ollama server
+ollama serve
+# 部署模型glm4:9b
+ollama pull glm4:9b
+```
+
+* Chatglm3-6b模型部署
+> 参见 [chatglm3-6b/README.md](./chatglm3/README.md)
+
+* 设置环境变量
+```bash
+# 访问使用ollama方式部署的模型时，需配置ollama_server地址，默认为http://localhost:11434
 export OLLAMA_API_BASE="http://localhost:11434"
-## 配置Openai API KEY
+
+# 访问使用code运行方式部署的模型，例如chatglm3-6b时，需要配置
+export OPENAI_BASE_URL=http://localhost:8000/v1
+
+# 访问openai模型时，配置Openai API KEY
 export OPENAI_API_KEY="sk-xxx"
 ```
 
@@ -58,9 +69,9 @@ python ai_translator/main.py gradio --help
 
 #### 1）使用命令行参数
 
-- 使用Openai模型
+- 使用Openai模型 (包括本地部署的chatglm3-6b)
 ```bash
-python ai_translator/main.py cmd 
+python ai_translator/main.py cmd  --model_type openai --model_name chatglm3-6b
 ```
 
 - 使用本地部署模型: glm4:9b
@@ -70,9 +81,9 @@ python ai_translator/main.py cmd  --model_type ollama --model_name glm4:9b
 
 #### 2）使用图形界面
 
-- 使用Openai模型
+- 使用Openai模型 (包括本地部署的chatglm3-6b)
 ```bash
-python ai_translator/main.py gradio
+python ai_translator/main.py gradio --model_type openai --model_name chatglm3-6b
 ```
 
 - 使用本地部署模型: glm4:9b
@@ -84,9 +95,9 @@ python ai_translator/main.py gradio --model_type ollama --model_name glm4:9b
 
 #### 3）使用API接口
 
-- 使用Openai模型
+- 使用Openai模型 (包括本地部署的chatglm3-6b)
 ```bash
-python ai_translator/main.py apiserver
+python ai_translator/main.py apiserver --model_type openai --model_name chatglm3-6b
 ```
 
 - 使用本地部署模型: glm4:9b
