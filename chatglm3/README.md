@@ -4,15 +4,10 @@
 ```bash
 pip install -r requirements.txt
 ```
-### 2. 修改配置
-
-```python
-# 修改 api_server.py 的line:54 代码，把'THUDM/chatglm3-6b'为你自己的模型路径:
-MODEL_PATH = os.environ.get('MODEL_PATH', 'THUDM/chatglm3-6b')
-```
-
-### 3. 运行
+### 2. 执行命令
 ```bash
+# 配置本地模型路径
+export MODEL_PATH=/opt/modules/chatglm3-6b
 python api_server.py
 ```
 
@@ -20,7 +15,7 @@ python api_server.py
 
 - 接口文档地址: http://127.0.0.1:8000/docs
 
-### 4. 测试
+### 3. 测试
 
 ```python
 from openai import OpenAI
